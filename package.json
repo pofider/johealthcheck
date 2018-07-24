@@ -1,0 +1,13 @@
+{
+  "name": "jo-health-check",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "jsreport-client": "0.4.1",
+    "sendgrid": "4.7.0",
+    "winser": "1.0.2"
+  }
+}
