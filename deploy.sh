@@ -7,4 +7,4 @@ docker push pofider/jo-health-check
 git clone https://github.com/pofider/kubernetes.git
 cd kubernetes
 chmod +x push.sh
-./push.sh "jo-health-check" "pofider/jo-health-check"
+./push.sh "jo" "pofider/jo-health-check"
