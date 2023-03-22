@@ -1,4 +1,4 @@
-FROM node:alpine
+FROM node:18-alpine3.16
 EXPOSE 1000
 
 WORKDIR /app

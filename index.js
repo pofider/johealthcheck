@@ -1,20 +1,20 @@
-var fs = require('fs')
-var credentials = JSON.parse(fs.readFileSync('credentials.json').toString())
-var sendgrid = require('sendgrid')
-var helper = sendgrid.mail
-var sg = sendgrid(credentials.email)
-var client = require("jsreport-client")(credentials.jo.url, credentials.jo.username, credentials.jo.password)
+const fs = require('fs')
+const credentials = JSON.parse(fs.readFileSync('credentials.json').toString())
+const sendgrid = require('sendgrid')
+const helper = sendgrid.mail
+const sg = sendgrid(credentials.email)
+const client = require('jsreport-client')(credentials.jo.url, credentials.jo.username, credentials.jo.password)
 
-var mail = function (message) {
+const mail = function (message) {
   console.log(message)
 
-  var from_email = new helper.Email(credentials.supportEmail)
-  var to_email = new helper.Email(credentials.senderEmail)
-  var subject = message.substring(0, 200)
-  var content = new helper.Content('text/plain', message);
-  var mail = new helper.Mail(from_email, subject, to_email, content);
+  const fromEmail = new helper.Email(credentials.supportEmail)
+  const toEmail = new helper.Email(credentials.senderEmail)
+  const subject = message.substring(0, 200)
+  const content = new helper.Content('text/plain', message)
+  const mail = new helper.Mail(fromEmail, subject, toEmail, content)
 
-  var request = sg.emptyRequest({
+  const request = sg.emptyRequest({
     method: 'POST',
     path: '/v3/mail/send',
     body: mail.toJSON()
@@ -27,45 +27,19 @@ var mail = function (message) {
   })
 }
 
-var linuxWorker = function (cb) {
-  client.render({
-    template: {
-      content: 'Hello {{foo}}',
-      recipe: 'phantom-pdf',
-      phantom: {
-        phantomjsVersion: '1.9.8'
-      },
-      engine: 'handlebars'
-    }
-  }, cb)
-}
-
-var windowsWorker = function (cb) {
-  client.render({
-    template: {
-      content: 'Hello {{:foo}}',
-      recipe: 'phantom-pdf',
-      phantom: {
-        phantomjsVersion: '1.9.8-windows'
-      },
-      engine: 'jsrender'
-    }
-  }, cb)
-}
-
-var lastError
-var lastErrorNotification
-var error = function (err) {
+let lastError
+let lastErrorNotification
+const error = function (err) {
   lastError = err
   if (!lastErrorNotification || (lastErrorNotification < new Date(new Date().getTime() - (30 * 60 * 1000)))) { // 30 min
     lastErrorNotification = new Date()
-    mail('jope ' + err.stack)
+    mail('jope ' + err.message + err.stack)
   } else {
     console.log('skipping sending error')
   }
 }
 
-var ok = function () {
+const ok = function () {
   console.log('ok')
 
   if (lastError) {
@@ -74,22 +48,30 @@ var ok = function () {
   }
 }
 
-
-var ping = function () {
+const ping = function () {
   console.log('ping')
 
-  linuxWorker(function (err) {
+  const start = Date.getTime()
+
+  client.render({
+    template: {
+      content: 'Hello {{foo}}',
+      recipe: 'chrome-pdf',
+      engine: 'handlebars'
+    },
+    data: {
+      foo: 'world'
+    }
+  }, (err) => {
     if (err) {
       return error(err)
     }
 
-    windowsWorker(function (e) {
-      if (e) {
-        return error(e)
-      }
+    if (Date.getTime() - start > 5000) {
+      return error(new Error(`long request, elapsed: ${Date.getTime() - start}ms`))
+    }
 
-      ok()
-    })
+    return ok()
   })
 }
 
