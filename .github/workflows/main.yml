@@ -18,9 +18,7 @@ jobs:
         with:
           node-version: '18.x'
 
-      - run: npm ci
-      - run: npm run build
-      - run: npm test
+      - run: npm ci      
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v1
