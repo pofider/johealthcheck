@@ -42,10 +42,8 @@ jobs:
           git checkout -b johealthcheck-${TAG}       
           git config --global user.name "pofider"
           git config --global user.email "honza.pofider@seznam.cz"
-
-          sed -i 's/'"pofider\/johealthcheck"'\:\(.*\)/'"pofider\/johealthcheck"'\:'"${TAG}"'/' ./config/staging/johealthcheck.yaml
-          sed -i 's/'"pofider\/johealthcheck"'\:\(.*\)/'"pofider\/johealthcheck"'\:'"${TAG}"'/' ./config/prod/johealthcheck.yaml
-          git add config/staging/johealthcheck.yaml
+          
+          sed -i 's/'"pofider\/johealthcheck"'\:\(.*\)/'"pofider\/johealthcheck"'\:'"${TAG}"'/' ./config/prod/johealthcheck.yaml          
           git add config/prod/johealthcheck.yaml
           git commit -m "Update the johealthcheck application"
 
