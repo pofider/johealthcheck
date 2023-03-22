@@ -51,7 +51,7 @@ const ok = function () {
 const ping = function () {
   console.log('ping')
 
-  const start = Date.getTime()
+  const start = new Date().getTime()
 
   client.render({
     template: {
@@ -67,8 +67,8 @@ const ping = function () {
       return error(err)
     }
 
-    if (Date.getTime() - start > 5000) {
-      return error(new Error(`long request, elapsed: ${Date.getTime() - start}ms`))
+    if (new Date().getTime() - start > 5000) {
+      return error(new Error(`long request, elapsed: ${new Date().getTime() - start}ms`))
     }
 
     return ok()
